@@ -1,0 +1,11 @@
+ffmpeg -r 1 -pattern_type glob -i './imgsrw/*.png' -c:v libsvtav1 -preset 2 -crf 25 -svtav1-params tune=0 -pix_fmt yuv420p10le -still-picture 1 out_full.avif # MORE JS FOR AVIF FRAME BY FRAME
+ffmpeg -r 1 -pattern_type glob -i './imgsrw/*.png' -c:v libsvtav1 -preset 2 -crf 25 -svtav1-params tune=0 -pix_fmt yuv420p10le -still-picture 1 out_full.webm # EASY TO USE, better browser compat
+
+magick mogrify -resize 2480x3570 *.jpg  // MAKE SURE ALL IMAGES CONSISTENT SAME RESOLUTION OTHERWISE FAIL (NOTE: OVERWRITES FILE)
+
+ffmpeg -r 1 -pattern_type glob -i './jpg/*.jpg' -c:v libvpx-vp9 -crf 30 -b:v 0 -pix_fmt yuv420p -auto-alt-ref 1 -lag-in-frames 25 -tile-columns 6 -frame-parallel 1 -threads 8 -speed 4 -row-mt 1 -an out_full.webm
+ffmpeg -r 1 -pattern_type glob -i './jpg/*.jpg' -c:v libvpx-vp9 -crf 30 -b:v 0 -pix_fmt yuv420p -auto-alt-ref 1 -lag-in-frames 12 -tile-columns 6 -frame-parallel 1 -threads 8 -speed 4 -row-mt 1 -an out_full.webm
+ffmpeg -r 1 -pattern_type glob -i './jpg/*.jpg' -c:v libsvtav1 -preset 2 -crf 25 -svtav1-params tune=0 -pix_fmt yuv420p10le -still-picture 1 out_full.webm
+
+
+https://www.reddit.com/r/AV1/comments/12vkloc/is_there_any_clear_documentation_on_how_to_make/
