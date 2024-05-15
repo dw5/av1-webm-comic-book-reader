@@ -149,14 +149,14 @@
 			// fix video duration NaN: Wait for the loadedmetadata event before accessing the duration property
 			videoPlayer.addEventListener('loadedmetadata', function() {
 				const pgSpan = document.getElementById('pgnumber');
-				pgSpan.textContent = `${videoPlayer.currentTime+1}/${videoPlayer.duration+1}`;
+				pgSpan.textContent = `${videoPlayer.currentTime}/${videoPlayer.duration}`;
 			});
 		}
 </script>
 <script> // Update URL query string with current page number
     function updateURL() {
       const urlParams = new URLSearchParams(window.location.search);
-      urlParams.set('page', vid.currentTime+1);
+      urlParams.set('page', vid.currentTime);
       window.history.pushState(null, '', `?${urlParams.toString()}`);
     }
 </script>
@@ -164,7 +164,7 @@
 vidi=document.getElementById("vid");
 function wrtpg() {
 const pgSpan = document.getElementById('pgnumber');
-pgSpan.textContent = `${vidi.currentTime+1}/${vidi.duration+1}`;
+pgSpan.textContent = `${vidi.currentTime}/${vidi.duration}`;
 }
  //window.onload = wrtpg;
 function next() {
@@ -183,12 +183,12 @@ function prev() {
 </script>
 <script>// Read page number from URL query string
 const urlParams = new URLSearchParams(window.location.search);
-let pageNumber = parseInt(urlParams.get('page')) || 1;
+let pageNumber = parseInt(urlParams.get('page')) || 0;
 
-if (pageNumber < 1 || pageNumber > vidi.duration+1) {
+if (pageNumber < 1 || pageNumber > vidi.duration) {
   vidi.currentTime = 0;
 } else {
-vidi.currentTime = pageNumber-1;
+vidi.currentTime = pageNumber;
 }
 </script>
 </html>

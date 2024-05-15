@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AV1 Comic Reader</title>
+		<style>
+		body {
+			background-color: #000;
+			margin: 0;
+			padding: 0;
+		}
+		
+		#video-player {
+			display: none;
+			width: 100%;
+			height: 100%;
+		}
+
+		#loadafile {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: calc(100vh - 20px);
+			padding: 20px;
+			box-sizing: border-box;
+		}
+
+		input[type="file"],
+		input[type="text"],
+		button {
+			font-size: 16px;
+			padding: 10px;
+			border: none;
+			background-color: #222;
+			color: #fff;
+			margin: 10px 0;
+			border-radius: 4px;
+			width: 100%;
+			max-width: 400px;
+			box-sizing: border-box;
+			text-align: center;
+		}
+
+		button {
+			cursor: pointer;
+			transition: all 0.3s ease-in-out;
+		}
+
+		button:hover {
+			background-color: #fff;
+			color: #222;
+		}
+	</style>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: sans-serif;
+            background-color: #1c1c1c;
+            color: #fff;
+        }
+        
+		#comic-container {
+		  display: flex;
+		  flex-direction: column;
+		  justify-content: center;
+		  align-items: center;
+		  height: 100vh;
+		  max-height: 100%;
+		  overflow: hidden;
+		}
+
+        
+		.comic-image {
+		  max-width: 100%;
+		  max-height: calc(100% - 60px); /* subtract the height of the controls */
+		  margin: auto;
+		}
+
+		#comic-controls {
+		  display: flex;
+		  justify-content: space-between;
+		  align-items: center;
+		  width: 100%;
+		  height: 60px;
+		  padding: 0 20px;
+		  box-sizing: border-box;
+		}
+        
+        #comic-controls button {
+            background-color: #fff;
+            color: #1c1c1c;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        #pgnumber {
+            font-size: 1.2em;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+	<div id="loadafile">
+		<h2 style="color: #fff; text-align: center;">AV1/WEBM Comic book viewer</h2>
+		<small>ffmpeg -r 1 -pattern_type glob -i './pages/*.png' -c:v libsvtav1 -preset 2 -crf 25 -svtav1-params tune=0 -pix_fmt yuv420p10le -still-picture 1 out_full.webm</small>
+		<input type="file" id="video-input" accept="video/*" />
+		<input type="text" id="url-input" placeholder="Enter video URL" />
+		<button onclick="loadVideo()">Load</button>
+	</div>
+	
+    <div id="comic-container" style="display:none"><!--autoplay="false" controls="false" controlslist="nodownload nofullscreen noremoteplayback disablepictureinpicture"-->
+        <video class="comic-image" id="vid">
+			<source src="">
+		</video>
+        <div id="comic-controls">
+            <button onclick="prev()" id="prev-button">Prev</button>
+            <span id="pgnumber">--LOADING--</span>
+            <button onclick="next()" id="next-button">Next</button>
+        </div>
+    </div>
+</body>
+<script> /* PRE PAGE */
+		const videoInput = document.getElementById('video-input');
+		const urlInput = document.getElementById('url-input');
+		const videoPlayer = document.getElementById('vid');
+
+		function loadVideo() {
+			const url = urlInput.value;
+			if (url) {
+				videoPlayer.src = url;
+			} else {
+				const file = videoInput.files[0];
+				const fileURL = URL.createObjectURL(file);
+				videoPlayer.src = fileURL;
+			}
+			videoPlayer.load();
+			videoPlayer.style.display = 'block';
+			document.getElementById('loadafile').style.display = 'none';
+			document.getElementById('comic-container').style.display = 'flex';
+			// fix video duration NaN: Wait for the loadedmetadata event before accessing the duration property
+			videoPlayer.addEventListener('loadedmetadata', function() {
+				const pgSpan = document.getElementById('pgnumber');
+				pgSpan.textContent = `${videoPlayer.currentTime+1}/${videoPlayer.duration+1}`;
+			});
+		}
+</script>
+<script> // Update URL query string with current page number
+    function updateURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('page', vid.currentTime+1);
+      window.history.pushState(null, '', `?${urlParams.toString()}`);
+    }
+</script>
+<script>// MAIN
+vidi=document.getElementById("vid");
+function wrtpg() {
+const pgSpan = document.getElementById('pgnumber');
+pgSpan.textContent = `${vidi.currentTime+1}/${vidi.duration+1}`;
+}
+ //window.onload = wrtpg;
+function next() {
+	document.getElementById("vid");
+	vid.currentTime += 1;
+	wrtpg();
+	updateURL();
+}
+
+function prev() {
+	document.getElementById("vid");
+	vid.currentTime -= 1;
+	wrtpg();
+	updateURL();
+}
+</script>
+<script>// Read page number from URL query string
+const urlParams = new URLSearchParams(window.location.search);
+let pageNumber = parseInt(urlParams.get('page')) || 1;
+
+if (pageNumber < 1 || pageNumber > vidi.duration+1) {
+  vidi.currentTime = 0;
+} else {
+vidi.currentTime = pageNumber-1;
+}
+</script>
+</html>
